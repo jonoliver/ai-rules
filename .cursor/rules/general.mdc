@@ -1,0 +1,12 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+- No comments in code
+- Use functional programming patterns
+- Use Immer for state updates
+- Use Ramda for data transformations
+- Follow TypeScript strict mode
+- Prefer explicit types over implicit ones
+- Never use `any` type

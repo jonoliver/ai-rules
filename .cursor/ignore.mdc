@@ -1,0 +1,21 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+Ignore these patterns:
+- node_modules/**
+- .next/**
+- out/**
+- .git/**
+- *.lock
+- *.log
+- *.tsbuildinfo
+- *.DS_Store
+- coverage/**
+- cypress/videos/**
+- cypress/screenshots/**
+
+Ignore these specific files:
+- next-env.d.ts
+- tsconfig.tsbuildinfo

@@ -1,0 +1,13 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+- Do not use React.FC type
+- Do not import React
+- Use hooks for state management
+- Component names should be PascalCase
+- Hook names should be camelCase
+- Props interface should be at the top of component files
+- Component should be a named export
+- Import styles as css/scss modules

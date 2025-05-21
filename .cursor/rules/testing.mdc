@@ -1,0 +1,35 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+Unit Testing:
+- Use Jest as the testing framework
+- Use @testing-library/react for component testing
+- Do not use @testing-library/user-event
+- Prefer these testing-library queries in order:
+  1. getByRole
+  2. getByLabelText
+  3. getByPlaceholderText
+  4. getByText
+  5. getByDisplayValue
+- Write tests that focus on user behavior
+- Keep tests simple and focused
+- Use meaningful test descriptions
+
+E2E Testing with Cypress:
+- Place all Cypress tests in the cypress/e2e directory
+- Use descriptive test names that explain the user journey
+- Group related tests using describe blocks
+- Use beforeEach hooks for common setup
+- Follow these best practices:
+  - Use data-testid attributes for test selectors
+  - Avoid using class names for selectors
+  - Use cy.get() with data-testid for reliable element selection
+  - Use cy.intercept() for API mocking
+  - Use cy.fixture() for test data
+- Structure tests to follow user workflows
+- Keep tests independent and isolated
+- Use custom commands for common operations
+- Handle loading states and animations
+- Clean up test data after each test

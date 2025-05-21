@@ -1,0 +1,17 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+- Components should be in the components/ directory
+- Pages should be in the pages/ directory
+- Styles should be in the scss/ directory
+- Utility functions should be in the utils/ directory
+- Custom hooks should be in the hooks/ directory
+- Each component should have its own directory with:
+  - index.tsx
+  - styles.module.scss
+  - component-name.test.tsx
+- Keep related files close together
+- Use index files for clean exports
+- Always use lowercase-kabab-case for filenames. Never use capital letters.
