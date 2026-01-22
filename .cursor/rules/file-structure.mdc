@@ -3,6 +3,8 @@ description:
 globs:
 alwaysApply: true
 ---
+
+## React / Next.js File Structure
 - Components should be in the components/ directory
 - Pages should be in the pages/ directory
 - Styles should be in the scss/ directory

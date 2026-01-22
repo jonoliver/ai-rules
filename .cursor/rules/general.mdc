@@ -3,13 +3,7 @@ description:
 globs:
 alwaysApply: false
 ---
-- No comments in code
-- Use functional programming patterns
-- Use Immer for state updates
-- Use Ramda for data transformations
-- Follow TypeScript strict mode
-- Prefer explicit types over implicit ones
-- Never use `any` type
+.Do not add or remove comments unless specifically requested.
 
 When reviewing code, designs, or solutions, always apply critical thinking first. Don't automatically agree with suggestions - instead:
 
