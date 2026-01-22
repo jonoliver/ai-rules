@@ -1,0 +1,103 @@
+---
+description: JavaScript and TypeScript coding conventions, type safety, and functional programming patterns
+globs: **/*.{js,jsx,ts,tsx}
+alwaysApply: false
+---
+
+## TypeScript Configuration
+
+- Follow TypeScript strict mode (`"strict": true`)
+- Enable `noUncheckedIndexedAccess` for safer array/object access
+- Enable `exactOptionalPropertyTypes` for precise optional property handling
+
+## Type Safety
+
+- Prefer explicit types over implicit ones
+- Never use `any` type—use `unknown` when the type is truly unknown, then narrow with type guards
+- Avoid type assertions (`as`) unless absolutely necessary; prefer type guards instead
+  - Acceptable uses of `as`:
+    - Asserting types on data fetched from an API (after validation, if applicable)
+    - Creating partial test data that implements only the minimal interface needed for the test
+- Use `satisfies` operator to validate types while preserving inference
+- Define return types explicitly for exported functions
+- Use discriminated unions over optional properties for mutually exclusive states
+
+## Functional vs Object-Oriented Programming
+
+- Prefer functional programming patterns by default
+- Use OOP when:
+  - An object needs to encapsulate and manage internal state over time
+  - Modeling entities with clear identity and lifecycle (e.g., connections, sessions, controllers)
+  - Implementing well-known OOP design patterns (e.g., Strategy, Observer, Factory)
+  - Working with frameworks or libraries that expect class-based structures
+  - Performance profiling demonstrates a clear need for mutation
+
+## Functional Programming
+
+- Prefer `const` over `let`; avoid `var` entirely
+- Prefer pure functions—same input always produces same output, no side effects
+- Use immutable data structures; avoid mutating objects and arrays
+- Prefer `map`, `filter`, `reduce` over imperative loops
+- Prefer function composition and pipelines over deeply nested calls
+- Use early returns to reduce nesting and improve readability
+
+## Object-Oriented Programming
+
+- Prefer composition over inheritance—favor small, focused classes composed together
+- Follow SOLID principles:
+  - **Single Responsibility**: A class should have only one reason to change
+  - **Open/Closed**: Open for extension, closed for modification
+  - **Liskov Substitution**: Subtypes must be substitutable for their base types
+  - **Interface Segregation**: Prefer small, specific interfaces over large, general ones
+  - **Dependency Inversion**: Depend on abstractions, not concrete implementations
+- Keep classes small and focused
+- Use `private` and `readonly` modifiers to enforce encapsulation
+- Prefer interfaces over abstract classes for defining contracts
+
+## Naming Conventions
+
+- Use camelCase for variables, functions, and methods
+- Use PascalCase for types, interfaces, classes, and components
+- Use SCREAMING_SNAKE_CASE for constants and environment variables
+- Prefix boolean variables with `is`, `has`, `should`, `can`, or similar
+- Prefix custom hooks with `use`
+- Use descriptive names that reveal intent—avoid abbreviations
+
+## Functions
+
+- Prefer arrow functions for callbacks and anonymous functions
+- Use function declarations for top-level named functions (benefits from hoisting)
+- Keep functions small and focused on a single responsibility
+- Limit function parameters to 3 or fewer; use an options object for more
+- Prefer default parameters over conditional assignment
+- Avoid parameter reassignment
+
+## Error Handling
+
+- Use typed errors or custom error classes for domain-specific failures
+- Prefer Result/Either patterns over throwing for expected failures
+- Only use try/catch for truly exceptional circumstances
+- Never swallow errors silently—always log or handle appropriately
+- Validate external inputs at system boundaries
+
+## Async Code
+
+- Prefer `async/await` over raw Promises
+  - Exception: `.then()` is cleaner for simple fetch-and-transform chains, e.g., `fetchData().then(adaptData)`
+- Avoid mixing `async/await` with `.then()/.catch()` chains in the same function
+- Handle Promise rejections appropriately
+- Use `Promise.all` for independent concurrent operations
+- Use `Promise.allSettled` when you need results regardless of individual failures
+
+## Imports and Exports
+
+- Use named exports for most cases; reserve default exports for pages/routes
+- Group and order imports: external dependencies, then internal modules, then relative imports
+- Avoid circular dependencies
+- Use barrel files (`index.ts`) sparingly—they can cause bundle bloat
+
+## Code Organization
+
+- Colocate related code; keep utilities close to where they're used
+- Extract shared logic into well-named utility functions
+- Keep files focused and reasonably sized
