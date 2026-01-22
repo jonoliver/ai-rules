@@ -1,0 +1,27 @@
+{
+  "name": "ai-rules",
+  "version": "0.0.1",
+  "description": "Install AI coding rules for Cursor or Claude",
+  "type": "module",
+  "bin": {
+    "ai-rules": "./bin/cli.js"
+  },
+  "files": [
+    "bin",
+    ".ai"
+  ],
+  "keywords": [
+    "cursor",
+    "claude",
+    "ai",
+    "rules",
+    "coding-standards"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@inquirer/select": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

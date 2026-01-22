@@ -1,60 +1,73 @@
-# Cursor Rules Examples
+# AI Rules
 
-This repository contains example Cursor rules files that demonstrate best practices and common use cases for [Cursor](https://cursor.com) rules.
+A collection of AI coding rules for [Cursor](https://cursor.com) and [Claude Code](https://claude.ai/code). Install them instantly with npx.
 
-## What are Cursor Rules?
+## Quick Start
 
-Cursor Rules are a powerful way to provide system-level guidance to the AI in Cursor. They help encode context, preferences, and workflows for your projects. Rules can be:
+```bash
+npx ai-rules
+```
 
-- Project Rules: Stored in `.cursor/rules`, version-controlled and scoped to your codebase
-- User Rules: Global to your Cursor environment, defined in settings
-- Legacy Rules: Using `.cursorrules` (deprecated)
+Select your target (Cursor or Claude Code) from the interactive prompt, or specify directly:
+
+```bash
+# Install for Cursor
+npx ai-rules --cursor
+
+# Install for Claude Code
+npx ai-rules --claude
+```
+
+Rules are copied to:
+- **Cursor**: `.cursor/rules/`
+- **Claude Code**: `.claude/rules/` (with `globs` transformed to `paths`)
+
+## Included Rules
+
+| Rule | Description | Applies To |
+|------|-------------|------------|
+| `general.mdc` | Code review approach, critical thinking, comment policies | Always |
+| `file-structure.mdc` | React/Next.js project structure conventions | Always |
+| `javascript-typescript.mdc` | TypeScript strict mode, functional patterns, naming | `**/*.{js,jsx,ts,tsx}` |
+| `react.mdc` | React component conventions, hooks, props | React files |
+| `styling.mdc` | ITCSS architecture, BEM, CSS Modules, Sass | `**/*.{scss,css,module.scss}` |
+| `testing.mdc` | Jest, testing-library, Cypress best practices | `**/*.{test,spec}.{js,jsx,ts,tsx}` |
+| `ignore.mdc` | Patterns to exclude from AI context | Always |
+
+## Rule Format
+
+Rules use MDC format with YAML front matter:
+
+```mdc
+---
+description: Brief description of the rule
+globs: **/*.tsx, **/*.ts
+alwaysApply: false
+---
+
+Your rule content in markdown...
+```
+
+### Front Matter Fields
+
+- `description`: Human-readable description
+- `globs` / `paths`: File patterns that trigger auto-attachment
+- `alwaysApply`: When `true`, rule is always included regardless of file patterns
+
+## Customization
+
+After installation, edit the rules in `.cursor/rules/` or `.claude/rules/` to match your project's conventions.
 
 ## Repository Structure
 
 ```
-.cursor/
-  └── rules/           # Contains all rule files
-      ├── always/      # Rules that are always included
-      ├── auto/        # Rules that are automatically attached based on file patterns
-      └── manual/      # Rules that must be explicitly referenced
+.ai/
+├── ignore.mdc           # Global ignore patterns
+└── rules/
+    ├── general.mdc
+    ├── file-structure.mdc
+    ├── javascript-typescript.mdc
+    ├── react.mdc
+    ├── styling.mdc
+    └── testing.mdc
 ```
-
-## Rule Types
-
-1. **Always Rules**
-   - Automatically included in every context
-   - Use for project-wide standards and conventions
-
-2. **Auto Attached Rules**
-   - Included when files matching specified patterns are referenced
-   - Great for language or framework-specific guidelines
-
-3. **Manual Rules**
-   - Only included when explicitly referenced using @ruleName
-   - Perfect for specialized workflows or templates
-
-## Example Rules
-
-Each rule file is written in MDC (`.mdc`) format, which supports metadata and content in a single file. Here's a basic example:
-
-```mdc
----
-description: React Component Standards
-globs: ["**/*.tsx"]
-alwaysApply: false
----
-
-- Use functional components
-- Follow atomic design principles
-- Implement proper TypeScript types
-- Use Tailwind for styling
-```
-
-## Getting Started
-
-1. Clone this repository
-2. Copy the relevant rules to your project's `.cursor/rules` directory
-3. Customize the rules to match your project's needs
-
-
