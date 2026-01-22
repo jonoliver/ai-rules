@@ -1,5 +1,611 @@
 ---
-description:
-globs:
+description: CSS and SCSS styling conventions, BEM methodology, and modernized ITCSS architecture using @use/@forward
+globs: **/*.scss, **/*.css, **/*.module.scss
 alwaysApply: false
 ---
+
+# Styling Guidelines
+
+## ITCSS Architecture (Modernized)
+
+Based on Inverted Triangle CSS, modernized to use Sass modules (`@use`/`@forward`) instead of deprecated `@import`.
+
+Organize stylesheets in layers from generic to specific. Each layer has increasing specificity and decreasing reach:
+
+```
+scss/
+├── 1-settings/       # Sass variables (breakpoints only), config flags
+│   ├── _index.scss   # @forward all partials
+│   └── _breakpoints.scss
+├── 2-tools/          # Mixins and functions (no CSS output)
+│   ├── _index.scss
+│   ├── _mixins.scss
+│   └── _functions.scss
+├── 3-generic/        # Reset, normalize, box-sizing
+│   ├── _index.scss
+│   ├── _reset.scss
+│   └── _box-sizing.scss
+├── 4-elements/       # Bare HTML elements (h1, a, button)
+│   ├── _index.scss
+│   ├── _headings.scss
+│   ├── _links.scss
+│   └── _forms.scss
+├── 5-objects/        # Layout patterns, OOCSS (no cosmetics)
+│   ├── _index.scss
+│   ├── _container.scss
+│   ├── _grid.scss
+│   └── _media.scss
+├── 6-components/     # Global UI components (BEM classes, if not using CSS Modules)
+│   ├── _index.scss
+│   ├── _button.scss
+│   ├── _card.scss
+│   └── _modal.scss
+├── 7-utilities/      # Single-purpose helpers, overrides
+│   ├── _index.scss
+│   ├── _spacing.scss
+│   ├── _visibility.scss
+│   └── _text.scss
+└── main.scss         # @use all layers in order
+```
+
+### Sass Modules: @use and @forward
+
+Never use `@import`—it is deprecated. Use `@use` to load and `@forward` to re-export.
+
+**@forward** — Re-export members from a module (used in `_index.scss` files):
+
+```scss
+// 1-settings/_index.scss
+@forward 'breakpoints';
+```
+
+**@use** — Load a module and access its members with a namespace:
+
+```scss
+// 6-components/_button.scss
+@use '../2-tools' as tools;
+
+.button {
+  padding: var(--spacing-md);
+
+  @include tools.respond-to(md) {
+    padding: var(--spacing-lg);
+  }
+}
+```
+
+**main.scss** — Entry point loads all layers in order:
+
+```scss
+// main.scss
+@use '1-settings' as settings;
+@use '2-tools' as tools;
+@use '3-generic';
+@use '4-elements';
+@use '5-objects';
+@use '6-components';
+@use '7-utilities';
+```
+
+### Module Rules
+
+- Load order matters—never load a higher layer after a lower one
+- Settings and tools produce no CSS output; they only expose variables/mixins
+- Use namespaces to avoid collisions (`settings.$color-primary`, not `$color-primary`)
+- Configure modules with `@use ... with ()` when needed:
+
+```scss
+@use '../1-settings' as settings with (
+  $color-primary: hsl(200 80% 50%)
+);
+```
+
+## BEM Naming Convention
+
+Use BEM for global stylesheets (ITCSS layers). For component styles, prefer CSS Modules with simple class names instead.
+
+Use Block__Element--Modifier pattern:
+
+```scss
+// Block: standalone component
+.card { }
+
+// Element: part of a block (double underscore)
+.card__header { }
+.card__body { }
+.card__footer { }
+
+// Modifier: variation of block or element (double hyphen)
+.card--featured { }
+.card__header--compact { }
+```
+
+### BEM Rules
+
+- Blocks are independent and reusable
+- Elements belong to blocks—never nest elements within elements (`.block__el1__el2` is wrong)
+- Modifiers describe state or variation, not structure
+- Use single hyphen for multi-word names: `.search-form__submit-button`
+- Never style bare element selectors inside BEM blocks
+
+```scss
+// Correct
+.nav__link { }
+
+// Incorrect - avoid descendant selectors
+.nav a { }
+```
+
+### BEM with SCSS
+
+Do not nest BEM selectors using `&`. Write full class names for searchability:
+
+```scss
+// Correct - searchable class names
+.card { }
+.card__header { }
+.card__body { }
+.card--featured { }
+
+// Incorrect - class names are not searchable
+.card {
+  &__header { }
+  &__body { }
+  &--featured { }
+}
+```
+
+Reserve `&` for pseudo-classes, pseudo-elements, and media queries only:
+
+```scss
+.card__link {
+  color: var(--color-primary);
+
+  &:hover,
+  &:focus {
+    color: var(--color-primary-dark);
+  }
+
+  &::after {
+    content: '→';
+  }
+}
+```
+
+## Units and Values
+
+### Use `rem` for sizing
+
+- Base font size on `:root` (typically 16px)
+- Use `rem` for font-size, margin, padding, gaps
+- Reserve `px` for borders, shadows, and fine details
+- Use `em` for component-relative scaling (e.g., icon inside button)
+
+```scss
+// 3-generic/_root.scss — Define tokens as CSS custom properties
+:root {
+  --spacing-unit: 0.25rem;
+  --spacing-xs: calc(var(--spacing-unit) * 1);   // 4px
+  --spacing-sm: calc(var(--spacing-unit) * 2);   // 8px
+  --spacing-md: calc(var(--spacing-unit) * 4);   // 16px
+  --spacing-lg: calc(var(--spacing-unit) * 6);   // 24px
+  --spacing-xl: calc(var(--spacing-unit) * 8);   // 32px
+
+  --font-size-xs: 0.75rem;    // 12px
+  --font-size-sm: 0.875rem;   // 14px
+  --font-size-base: 1rem;     // 16px
+  --font-size-lg: 1.25rem;    // 20px
+  --font-size-xl: 1.5rem;     // 24px
+}
+
+// Usage in components
+.card {
+  padding: var(--spacing-md);
+  font-size: var(--font-size-base);
+  border: 1px solid currentColor;   // px for borders
+}
+```
+
+### Logical Properties
+
+Prefer logical properties over physical properties for internationalization:
+
+```scss
+// Physical (avoid)
+margin-left: 1rem;
+padding-right: 1rem;
+border-top: 1px solid;
+text-align: left;
+
+// Logical (prefer)
+margin-inline-start: 1rem;
+padding-inline-end: 1rem;
+border-block-start: 1px solid;
+text-align: start;
+```
+
+Common mappings:
+- `left/right` → `inline-start/inline-end`
+- `top/bottom` → `block-start/block-end`
+- `width/height` → `inline-size/block-size`
+
+## CSS Custom Properties
+
+Prefer CSS custom properties over Sass variables for all design tokens. Sass variables are only required for media query breakpoints (CSS custom properties cannot be used in media queries).
+
+```scss
+// 3-generic/_root.scss — All design tokens as CSS custom properties
+:root {
+  --color-primary: hsl(220 90% 56%);
+  --color-primary-hover: hsl(220 90% 46%);
+  --color-surface: hsl(0 0% 100%);
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.05);
+}
+
+// Component-scoped custom properties for variants
+.button {
+  --button-bg: var(--color-primary);
+  --button-color: white;
+
+  background: var(--button-bg);
+  color: var(--button-color);
+}
+
+.button--secondary {
+  --button-bg: transparent;
+  --button-color: var(--color-primary);
+}
+```
+
+**When to use which:**
+- **CSS custom properties** — All design tokens (colors, spacing, typography, radii, shadows)
+- **Sass variables** — Only for media query breakpoints (CSS limitation)
+
+## Selectors
+
+### Specificity Management
+
+- Keep specificity low and consistent
+- Avoid IDs in stylesheets
+- Avoid `!important` except in utility classes
+- Prefer single class selectors
+- Use `:where()` to reduce specificity when needed
+
+```scss
+// Low specificity utility (specificity: 0,0,1)
+.u-hidden { display: none !important; }
+
+// Zero specificity reset
+:where(ul, ol) { list-style: none; }
+```
+
+### Selector Guidelines
+
+```scss
+// Avoid overly specific selectors
+// Bad
+div.card > header.card__header { }
+
+// Good
+.card__header { }
+
+// Avoid element-qualified classes
+// Bad
+a.nav__link { }
+
+// Good
+.nav__link { }
+```
+
+## Responsive Design
+
+### Mobile-first media queries
+
+```scss
+// 1-settings/_breakpoints.scss
+$breakpoints: (
+  sm: 640px,
+  md: 768px,
+  lg: 1024px,
+  xl: 1280px,
+);
+
+// 2-tools/_mixins.scss
+@use '../1-settings' as settings;
+
+@mixin respond-to($breakpoint) {
+  @media (min-width: map-get(settings.$breakpoints, $breakpoint)) {
+    @content;
+  }
+}
+
+// 6-components/_grid.scss
+@use '../2-tools' as tools;
+
+.grid {
+  display: grid;
+  gap: 1rem;
+
+  @include tools.respond-to(md) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include tools.respond-to(lg) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+```
+
+### Container queries for component-level responsiveness
+
+```scss
+.card-container {
+  container-type: inline-size;
+}
+
+.card {
+  @container (min-width: 400px) {
+    flex-direction: row;
+  }
+}
+```
+
+## Layout
+
+### Prefer modern layout techniques
+
+- Use Flexbox for one-dimensional layouts
+- Use Grid for two-dimensional layouts
+- Avoid floats for layout
+- Use `gap` instead of margins for spacing between items
+
+```scss
+// Flexbox for navigation
+.nav {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+// Grid for page layout (assumes @use '../2-tools' as tools; at top of file)
+.page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem;
+
+  @include tools.respond-to(lg) {
+    grid-template-columns: 16rem minmax(0, 1fr);
+  }
+}
+```
+
+## CSS Modules
+
+Use CSS Modules (`*.module.scss`) for component-scoped styles. Class names are locally scoped by default, preventing collisions.
+
+### When to Use CSS Modules
+
+- **Use CSS Modules** for component styles in `components/`
+- **Use global ITCSS** for design tokens, resets, elements, objects, and utilities
+
+### File Structure
+
+Each component gets its own module file alongside the component:
+
+```
+components/
+└── button/
+    ├── index.tsx
+    ├── styles.module.scss
+    └── button.test.tsx
+```
+
+### Class Naming in Modules
+
+Within CSS Modules, use simple, semantic class names—BEM is unnecessary since scoping is automatic:
+
+```scss
+// button/styles.module.scss
+
+// Use simple names, not BEM
+.root { }
+.icon { }
+.label { }
+.disabled { }
+.primary { }
+.secondary { }
+
+// Not needed in modules
+.button__icon { }
+.button--primary { }
+```
+
+### Accessing ITCSS Tools
+
+Import tools (mixins) from the global ITCSS structure. Use CSS custom properties for design tokens:
+
+```scss
+// button/styles.module.scss
+@use '../../scss/2-tools' as tools;
+
+.root {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+
+  &:hover {
+    background: var(--color-primary-hover);
+  }
+}
+
+@include tools.respond-to(md) {
+  .root {
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+}
+```
+
+### Composition
+
+Use `composes` to share styles between classes within the same module:
+
+```scss
+// button/styles.module.scss
+.base {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: none;
+  cursor: pointer;
+}
+
+.primary {
+  composes: base;
+  background: var(--color-primary);
+  color: white;
+}
+
+.secondary {
+  composes: base;
+  background: transparent;
+  border: 1px solid currentColor;
+}
+```
+
+Cross-file composition is possible but creates tight coupling—use sparingly:
+
+```scss
+// alert/styles.module.scss
+.root {
+  composes: base from '../card/styles.module.scss';
+  border-inline-start: 4px solid var(--color-warning);
+}
+```
+
+Prefer extracting shared styles to a shared module or using Sass mixins instead.
+
+### Global Selectors
+
+Escape scoping with `:global()` when targeting global classes or elements:
+
+```scss
+// modal/styles.module.scss
+.root {
+  position: fixed;
+}
+
+.root :global(.u-sr-only) {
+  // Target global utility class
+}
+
+:global(body.modal-open) {
+  overflow: hidden;
+}
+```
+
+### Usage in React
+
+Import the module and access classes via the `styles` object:
+
+```tsx
+// button/index.tsx
+import styles from './styles.module.scss';
+
+type ButtonProps = {
+  variant?: 'primary' | 'secondary';
+  disabled?: boolean;
+  children: React.ReactNode;
+};
+
+export const Button = ({ variant = 'primary', disabled, children }: ButtonProps) => (
+  <button
+    className={`${styles[variant]} ${disabled ? styles.disabled : ''}`}
+    disabled={disabled}
+  >
+    {children}
+  </button>
+);
+```
+
+For complex class combinations, use a utility like `clsx`:
+
+```tsx
+import clsx from 'clsx';
+import styles from './styles.module.scss';
+
+<button className={clsx(styles.root, styles[variant], { [styles.disabled]: disabled })}>
+```
+
+### TypeScript Support
+
+For type-safe class name access, generate type declarations. Configure your build tool or use `typescript-plugin-css-modules`.
+
+Access only defined classes:
+
+```tsx
+// Type error if class doesn't exist
+<div className={styles.nonExistent} />
+```
+
+### Anti-patterns to Avoid
+
+```scss
+// Avoid element selectors - not scoped
+.root div { }
+
+// Avoid deep nesting
+.root .inner .deep .element { }
+
+// Avoid styling children of other components
+.root .otherComponent { }
+```
+
+### Module Naming Conventions
+
+- Use `styles.module.scss` for the primary module
+- Name the import `styles` for consistency across components
+- For multiple modules, use descriptive names: `animations.module.scss`, `variants.module.scss`
+
+## Performance
+
+- Avoid expensive selectors (universal `*`, deep descendants)
+- Minimize use of `@extend`—prefer mixins or utility classes
+- Use `will-change` sparingly and remove after animations
+- Prefer `transform` and `opacity` for animations
+- Use `content-visibility: auto` for off-screen content
+
+```scss
+// Performant animation
+.modal {
+  opacity: 0;
+  transform: translateY(1rem);
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+
+.modal--open {
+  opacity: 1;
+  transform: translateY(0);
+}
+```
+
+## Code Style
+
+- One selector per line in selector lists
+- One declaration per line
+- Include a space after the colon
+- Use lowercase for hex colors
+- Omit units on zero values
+- Use shorthand properties judiciously
+
+```scss
+// Correct
+.card,
+.panel {
+  margin: 0;
+  padding: 1rem;
+  color: #333;
+  background-color: hsl(0 0% 100%);
+}
+```
