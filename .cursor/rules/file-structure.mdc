@@ -1,5 +1,5 @@
 ---
-description:
+description: React and Next.js project file structure and organization conventions
 globs:
 alwaysApply: true
 ---

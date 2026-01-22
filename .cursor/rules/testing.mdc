@@ -1,7 +1,7 @@
 ---
-description:
-globs:
-alwaysApply: true
+description: Unit testing with Jest and testing-library, E2E testing with Cypress
+globs: **/*.test.{js,jsx,ts,tsx}, **/*.spec.{js,jsx,ts,tsx}, cypress/**/*.cy.{js,ts}
+alwaysApply: false
 ---
 Unit Testing:
 - Use Jest as the testing framework

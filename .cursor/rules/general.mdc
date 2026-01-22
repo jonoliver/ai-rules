@@ -1,9 +1,9 @@
 ---
-description:
+description: General coding principles including critical thinking, code review approach, and comment handling
 globs:
-alwaysApply: false
+alwaysApply: true
 ---
-.Do not add or remove comments unless specifically requested.
+Do not add or remove comments unless specifically requested.
 
 When reviewing code, designs, or solutions, always apply critical thinking first. Don't automatically agree with suggestions - instead:
 
