@@ -1,6 +1,6 @@
 {
   "name": "ai-rules",
-  "version": "0.0.1",
+  "version": "0.0.0-development",
   "description": "Install AI coding rules for Cursor or Claude",
   "type": "module",
   "bin": {
@@ -18,10 +18,30 @@
     "coding-standards"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonoliver/ai-rules.git"
+  },
+  "homepage": "https://github.com/jonoliver/ai-rules#readme",
+  "bugs": {
+    "url": "https://github.com/jonoliver/ai-rules/issues"
+  },
   "dependencies": {
     "@inquirer/select": "^4.0.0"
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "semantic-release": "^24.0.0"
+  },
+  "release": {
+    "branches": ["main"],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/npm",
+      "@semantic-release/github"
+    ]
   }
 }
